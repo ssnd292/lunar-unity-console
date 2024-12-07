@@ -5,10 +5,11 @@ apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-android-extensions'
 
 android {
-    compileSdkVersion 30
+    compileSdk  34
+
     defaultConfig {
         minSdkVersion 19
-        targetSdkVersion 30
+        targetSdkVersion 35
         versionCode 1
         versionName "1.0"
 
@@ -42,7 +43,7 @@ android {
 dependencies {
     implementation fileTree(include: ['*.jar'], dir: 'libs')
     compileOnly files(getUnityDependencyJar())
-    testImplementation 'junit:junit:4.13'
+    testImplementation 'junit:junit:4.13.2'
     testImplementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
     androidTestImplementation 'com.android.support.test:runner:1.0.2'
 }
@@ -52,7 +53,7 @@ repositories {
 
 static def getUnityDependencyJar() {
     if (Os.isFamily(Os.FAMILY_WINDOWS)) {
-        return 'C:/Program Files/Unity-Export/Editor/Data/PlaybackEngines/AndroidPlayer/Variations/mono/Release/Classes/classes.jar'
+        return 'C:\\Program Files\\Unity\\Hub\\Editor\\6000.0.27f1\\Editor\\Data\\PlaybackEngines\\AndroidPlayer\\Variations\\il2cpp\\Release\\Classes\\classes.jar'
     }
 
     return '/Applications/Unity-Export/PlaybackEngines/AndroidPlayer/Variations/mono/Release/Classes/classes.jar'

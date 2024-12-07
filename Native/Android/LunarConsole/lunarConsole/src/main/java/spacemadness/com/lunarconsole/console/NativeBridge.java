@@ -86,7 +86,7 @@ public final class NativeBridge {
                 }
 
                 final Activity activity = UnityPlayer.currentActivity;
-                final Platform platform = new ManagedPlatform(activity, targetName, methodName);
+                final Platform platform = new ManagedPlatform(targetName, methodName);
                 final PluginSettings settings = JsonDecoder.decode(settingsJson, PluginSettings.class);
                 final ColorFactory colorFactory = new DefaultColorFactory(activity);
                 final RichTextFactory richTextFactory = new DefaultRichTextFactory(colorFactory);

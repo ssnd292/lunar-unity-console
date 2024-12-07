@@ -1,91 +1,50 @@
-//
-//  ManagedPlatform.java
-//
-//  Lunar Unity Mobile Console
-//  https://github.com/SpaceMadness/lunar-unity-console
-//
-//  Copyright 2015-2021 Alex Lementuev, SpaceMadness.
-//
-//  Licensed under the Apache License, Version 2.0 (the "License");
-//  you may not use this file except in compliance with the License.
-//  You may obtain a copy of the License at
-//
-//      http://www.apache.org/licenses/LICENSE-2.0
-//
-//  Unless required by applicable law or agreed to in writing, software
-//  distributed under the License is distributed on an "AS IS" BASIS,
-//  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-//  See the License for the specific language governing permissions and
-//  limitations under the License.
-//
-
-
 package spacemadness.com.lunarconsole.console;
 
 import android.app.Activity;
 import android.view.View;
-import android.view.ViewGroup;
 
 import com.unity3d.player.UnityPlayer;
 
-import java.lang.ref.WeakReference;
+import java.lang.reflect.Field;
 import java.util.Map;
 
-import spacemadness.com.lunarconsole.core.LunarConsoleException;
 import spacemadness.com.lunarconsole.debug.Log;
-import spacemadness.com.lunarconsole.utils.UIUtils;
 
 import static spacemadness.com.lunarconsole.debug.Tags.PLUGIN;
 
+// https://github.com/SpaceMadness/lunar-unity-console/issues/218#issuecomment-2226078485
+
 public class ManagedPlatform implements Platform {
-    private final WeakReference<UnityPlayer> playerRef;
     private final UnityScriptMessenger scriptMessenger;
 
-    public ManagedPlatform(Activity activity, String target, String method) {
-        UnityPlayer player = resolveUnityPlayerInstance(activity);
-        if (player == null) {
-            throw new LunarConsoleException("Can't initialize plugin: UnityPlayer instance not resolved");
-        }
-
-        playerRef = new WeakReference<>(player);
+    public ManagedPlatform(String target, String method) {
         scriptMessenger = new UnityScriptMessenger(target, method);
     }
 
-    //region Helpers
-
-    private static UnityPlayer resolveUnityPlayerInstance(Activity activity) {
-        return resolveUnityPlayerInstance(UIUtils.getRootViewGroup(activity));
-    }
-
-    private static UnityPlayer resolveUnityPlayerInstance(ViewGroup root) {
-        if (root instanceof UnityPlayer) {
-            return (UnityPlayer) root;
-        }
-
-        for (int i = 0; i < root.getChildCount(); ++i) {
-            View child = root.getChildAt(i);
-            if (child instanceof UnityPlayer) {
-                return (UnityPlayer) child;
-            }
-
-            if (child instanceof ViewGroup) {
-                UnityPlayer player = resolveUnityPlayerInstance((ViewGroup) child);
-                if (player != null) {
-                    return player;
-                }
-            }
-        }
-
-        return null;
-    }
-
-    //endregion
-
-    //region Platform
-
     @Override
     public View getTouchRecipientView() {
-        return getPlayer();
+        Activity activity = UnityPlayer.currentActivity;
+        if (activity == null) {
+            Log.e(PLUGIN, "UnityPlayer.currentActivity is null");
+            return null;
+        }
+
+        UnityPlayer unityPlayer = null;
+
+        try {
+            Field unityPlayerField = activity.getClass().getDeclaredField("mUnityPlayer");
+            unityPlayerField.setAccessible(true);
+            unityPlayer = (UnityPlayer) unityPlayerField.get(activity);
+        } catch (Exception e) {
+            Log.e(PLUGIN, "Error while getting UnityPlayer instance: %s", e);
+        }
+
+        if (unityPlayer == null) {
+            Log.e(PLUGIN, "UnityPlayer instance is null");
+            return null;
+        }
+
+        return unityPlayer.getFrameLayout();
     }
 
     @Override
@@ -96,14 +55,4 @@ public class ManagedPlatform implements Platform {
             Log.e(PLUGIN, "Error while sending Unity script message: name=%s param=%s", name, data);
         }
     }
-
-    //endregion
-
-    //region Getters/Setters
-
-    private UnityPlayer getPlayer() {
-        return playerRef.get();
-    }
-
-    //endregion
 }

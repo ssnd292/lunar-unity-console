@@ -30,6 +30,8 @@ import static android.util.Log.ERROR;
 import static android.util.Log.INFO;
 import static android.util.Log.WARN;
 
+import android.annotation.SuppressLint;
+
 public class Log {
     private static final String TAG = "LunarConsole";
     private static final LogLevel logLevel = Config.DEBUG ? LogLevel.Debug : LogLevel.Info;
@@ -83,6 +85,7 @@ public class Log {
         }
     }
 
+    @SuppressLint("WrongConstant")
     private static void logHelper(LogLevel level, String format, Object... args) {
         int priority = level.getAndroidLogPriority();
 
