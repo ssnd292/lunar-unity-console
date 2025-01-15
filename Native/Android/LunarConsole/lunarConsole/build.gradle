@@ -2,16 +2,14 @@ import org.apache.tools.ant.taskdefs.condition.Os
 
 apply plugin: 'com.android.library'
 apply plugin: 'kotlin-android'
-apply plugin: 'kotlin-android-extensions'
 
 android {
-    compileSdk  34
+    compileSdk  35
 
     defaultConfig {
+        namespace "spacemadness.com.lunarconsoleapp"
         minSdkVersion 19
         targetSdkVersion 35
-        versionCode 1
-        versionName "1.0"
 
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
         consumerProguardFiles "consumer-rules.pro"
@@ -21,6 +19,9 @@ android {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
+    }
+    buildFeatures {
+        viewBinding true
     }
     flavorDimensions "version"
     productFlavors {
@@ -38,6 +39,7 @@ android {
         freeDebug
         freeRelease
     }
+    buildToolsVersion '35.0.0'
 }
 
 dependencies {
@@ -53,7 +55,7 @@ repositories {
 
 static def getUnityDependencyJar() {
     if (Os.isFamily(Os.FAMILY_WINDOWS)) {
-        return 'C:\\Program Files\\Unity\\Hub\\Editor\\6000.0.27f1\\Editor\\Data\\PlaybackEngines\\AndroidPlayer\\Variations\\il2cpp\\Release\\Classes\\classes.jar'
+        return 'D:\\Program Files\\UnityEditor\\6000.0.32f1\\Editor\\Data\\PlaybackEngines\\AndroidPlayer\\Variations\\il2cpp\\Release\\Classes\\classes.jar'
     }
 
     return '/Applications/Unity-Export/PlaybackEngines/AndroidPlayer/Variations/mono/Release/Classes/classes.jar'
