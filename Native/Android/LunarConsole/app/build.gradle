@@ -3,7 +3,7 @@ apply plugin: 'com.android.application'
 android {
     compileSdk 35
     buildToolsVersion "29.0.3"
-
+    namespace "spacemadness.com.lunarconsoleapp"
     defaultConfig {
         applicationId "spacemadness.com.lunarconsoleapp"
         minSdkVersion 19
